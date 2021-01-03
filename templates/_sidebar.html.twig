@@ -14,7 +14,7 @@
 {% endmacro %}
 
 <ul class="nav flex-column">
-    <li id="treeBox-categories">
+    <li id="treeBox-categories" data-turbo-permanent>
         <div class="input-group input-group-sm mb-2 mt-1">
             <div class="input-group-prepend">
                 <button class="btn btn-light dropdown-toggle" type="button"
@@ -29,7 +29,7 @@
 
         <div id="tree-categories" data-tree-search="#tree-category-search"></div>
     </li>
-    <li id="treeBox-devices" class="d-sm-none d-md-block">
+    <li id="treeBox-devices" class="d-sm-none d-md-block" data-turbo-permanent>
         <div class="input-group input-group-sm mb-2 mt-2">
             <div class="input-group-prepend">
                 <button class="btn btn-light dropdown-toggle" type="button"
@@ -46,7 +46,7 @@
         <div id="tree-devices" data-tree-search="#tree-devices-search"></div>
     </li>
 
-    <li id="treeBox-tools">
+    <li id="treeBox-tools" data-turbo-permanent>
         <div class="input-group input-group-sm mb-2 mt-2">
             <div class="input-group-prepend">
                 <button class="btn btn-light dropdown-toggle" type="button"

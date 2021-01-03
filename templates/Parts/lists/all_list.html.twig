@@ -1,5 +1,7 @@
 {% extends "base.html.twig" %}
 
+{% block turbo_params %}<meta name="turbo-visit-control" content="reload">{% endblock %}
+
 {% block  title %}
 {% trans %}parts_list.all.title{% endtrans %}
 {% endblock %}

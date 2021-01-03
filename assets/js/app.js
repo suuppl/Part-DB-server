@@ -94,12 +94,13 @@ require('katex');
 window.renderMathInElement = require('katex/contrib/auto-render/auto-render').default;
 import 'katex/dist/katex.css';
 
+import Turbo from "@hotwired/turbo";
+
+
 window.ClipboardJS = require('clipboard');
 
-require('../ts_src/ajax_ui');
-import {ajaxUI} from "../ts_src/ajax_ui";
-
-window.ajaxUI = ajaxUI;
+import './tree_loader';
+import './datatables_loader';
 
 //Require all events;
 require('../ts_src/event_listeners');
@@ -123,10 +124,3 @@ try {
 } catch (e) {
     //Ignore all errors (for compatibiltiy with old browsers)
 }
-
-//Start AjaxUI AFTER all event has been registered
-$(document).ready(ajaxUI.start());
-
-
-
-//console.log('Hello Webpack Encore! Edit me in assets/js/app.js');

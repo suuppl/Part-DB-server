@@ -17,11 +17,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {ajaxUI} from "./ajax_ui";
+import * as Turbo from "@hotwired/turbo";
 import "bootbox";
 import "marked";
 import * as marked from "marked";
-import {parse} from "marked";
 import * as ZXing from "@zxing/library";
 
 /************************************
@@ -29,11 +28,10 @@ import * as ZXing from "@zxing/library";
  * In this file all the functions that has to be called using AjaxUIoperation are registered.
  * You can use AjaxUI:start and AjaxUI:reload events.
  *
- ***********************************/
-
+ ************************************/
 
 //Register greek input in search fields.
-$(document).on("ajaxUI:start ajaxUI:reload", function() {
+document.addEventListener("turbo:load", function() {
     //@ts-ignore
     $("input[type=text], textarea, input[type=search]").unbind("keydown").keydown(function (event : KeyboardEvent) {
         let greek = event.altKey;
@@ -110,7 +108,7 @@ $(document).on("ajaxUI:start ajaxUI:reload", function() {
 });
 
 //Register bootstrap select picker
-$(document).on("ajaxUI:reload ajaxUI:start", function () {
+document.addEventListener("turbo:load", function () {
     //@ts-ignore
     $(".selectpicker").selectpicker({
         dropdownAlignRight: 'auto',
@@ -119,15 +117,18 @@ $(document).on("ajaxUI:reload ajaxUI:start", function () {
 });
 
 //Use bootstrap tooltips for the most tooltips
-$(document).on("ajaxUI:start ajaxUI:reload ajaxUI:dt_loaded", function () {
+function initToolTips() {
     $(".tooltip").remove();
     $('a[title], button[title], span[title], h6[title], h3[title], i.fas[title]')
-    //@ts-ignore
+        //@ts-ignore
         .tooltip("hide").tooltip({container: "body", placement: "auto", boundary: 'window'});
-});
+}
+document.addEventListener('turbo:load', initToolTips);
+document.addEventListener('dt:loaded', initToolTips);
+
 
 // Add bootstrap treeview on divs with data-tree-data attribute
-$(document).on("ajaxUI:start ajaxUI:reload", function() {
+document.addEventListener("turbo:load", function() {
     $("[data-tree-data]").each(function(index, element) {
         let data = $(element).data('treeData');
 
@@ -147,7 +148,7 @@ $(document).on("ajaxUI:start ajaxUI:reload", function() {
             expandIcon: "fas fa-plus fa-fw fa-treeview", collapseIcon: "fas fa-minus fa-fw fa-treeview",
             onNodeSelected: function(event, data) {
                 if(data.href) {
-                    ajaxUI.navigateTo(data.href);
+                    Turbo.visit(data.href);
                 }
             }
         }).on('initialized', function() {
@@ -185,7 +186,7 @@ $(document).on("ajaxUI:start ajaxUI:reload", function() {
     });
 });
 
-$(document).on("ajaxUI:start ajaxUI:reload", function() {
+document.addEventListener("turbo:load", function() {
     $("[data-delete-form]").unbind('submit').submit(function (event) {
         event.preventDefault();
 
@@ -201,7 +202,8 @@ $(document).on("ajaxUI:start ajaxUI:reload", function() {
             message: message, title: title, callback: function (result) {
                 //If the dialog was confirmed, then submit the form.
                 if (result) {
-                    ajaxUI.submitForm(form, btn);
+                    alert("Not implemented yet!");
+                    //ajaxUI.submitForm(form, btn);
                 }
             }
         });
@@ -221,14 +223,16 @@ $(document).on("ajaxUI:start ajaxUI:reload", function() {
 
         //If not the button with the message was pressed, then simply submit the form.
         if(!btn.hasAttribute('data-delete-btn')) {
-            ajaxUI.submitForm(form, btn);
+            alert("Not implemented yet!");
+            //ajaxUI.submitForm(form, btn);
         }
 
         bootbox.confirm({
             message: message, title: title, callback: function (result) {
                 //If the dialog was confirmed, then submit the form.
                 if (result) {
-                    ajaxUI.submitForm(form, btn);
+                    alert("Not implemented yet!");
+                    //ajaxUI.submitForm(form, btn);
                 }
             }
         });
@@ -237,7 +241,7 @@ $(document).on("ajaxUI:start ajaxUI:reload", function() {
 
 });
 
-$(document).on("ajaxUI:start ajaxUI:reload", function() {
+document.addEventListener("turbo:load", function() {
     //@ts-ignore
     $(".tristate").tristate( {
         checked:            "true",
@@ -258,12 +262,12 @@ $(document).on("ajaxUI:start ajaxUI:reload", function() {
 });
 
 //Re initialize fileinputs on reload
-$(document).on("ajaxUI:reload", function () {
+document.addEventListener("turbo:load", function () {
     //@ts-ignore
     $(".file").fileinput();
 });
 
-$(document).on("ajaxUI:start ajaxUI:reload", function () {
+document.addEventListener("turbo:load", function () {
     $('input.tagsinput').each(function() {
 
         //Use typeahead if an autocomplete url was specified.
@@ -300,7 +304,7 @@ $(document).on("ajaxUI:start ajaxUI:reload", function () {
 /**
  * Register the button, to jump to the top of the page.
  */
-$(document).on("ajaxUI:start", function registerJumpToTop() {
+document.addEventListener("turbo:load", function registerJumpToTop() {
     $(window).scroll(function () {
         if ($(this).scrollTop() > 50) {
             $('#back-to-top').fadeIn();
@@ -323,7 +327,7 @@ $(document).on("ajaxUI:start", function registerJumpToTop() {
  * that tab on reload. That means that if the user changes something, he does not have to switch back to the tab
  * where he was before submit.
  */
-$(document).on("ajaxUI:reload ajaxUI:start", function () {
+document.addEventListener("turbo:load", function () {
     //Determine which tab should be shown (use hash if specified, otherwise use localstorage)
     var $activeTab = null;
     if (location.hash) {
@@ -358,11 +362,7 @@ $(document).on("ajaxUI:reload ajaxUI:start", function () {
     });
 });
 
-/**
- * Load the higher resolution version of hover pictures.
- */
-$(document).on("ajaxUI:reload ajaxUI:start ajaxUI:dt_loaded", function () {
-
+function initThumbnailsPopovers() {
     $('.hoverpic[data-thumbnail]').popover({
         html: true,
         trigger: 'hover',
@@ -372,12 +372,14 @@ $(document).on("ajaxUI:reload ajaxUI:start ajaxUI:dt_loaded", function () {
             return '<img class="img-fluid" src="' + $(this).data('thumbnail') + '" />';
         }
     });
-});
+}
+document.addEventListener('turbo:load', initThumbnailsPopovers);
+document.addEventListener('dt:loaded', initThumbnailsPopovers);
 
 /*
  * Register the button which is used to 
  */
-$(document).on("ajaxUI:start", function() {
+document.addEventListener("turbo:load", function() {
     let $sidebar = $("#fixed-sidebar");
     let $container = $("#main");
     let $toggler = $('#sidebar-toggle-button');
@@ -418,7 +420,7 @@ $(document).on("ajaxUI:start", function() {
 });
 
 //Register typeaheads
-$(document).on("ajaxUI:reload ajaxUI:start attachment:create", function () {
+function registerTypeAhead() {
     $('input[data-autocomplete]').each(function() {
         //@ts-ignore
         var engine = new Bloodhound({
@@ -457,9 +459,11 @@ $(document).on("ajaxUI:reload ajaxUI:start attachment:create", function () {
         //Make the typeahead input fill the container (remove block-inline attr)
         $(this).parent(".twitter-typeahead").css('display', 'block');
     })
-});
+}
+document.addEventListener('turbo:load', registerTypeAhead);
+$(document).on('attachment:create', registerTypeAhead);
 
-$(document).on("ajaxUI:start", function () {
+document.addEventListener("turbo:load", function () {
     function decodeHTML(html) {
         var txt = document.createElement('textarea');
         txt.innerHTML = html;
@@ -501,11 +505,11 @@ $(document).on("ajaxUI:start", function () {
     });
 
     parseMarkdown();
-    $(document).on("ajaxUI:reload", parseMarkdown);
-    $(document).on("ajaxUI:dt_loaded", parseMarkdown);
+    document.addEventListener("turbo:load", parseMarkdown);
+    document.addEventListener('dt:loaded', parseMarkdown);
 });
 
-$(document).on("ajaxUI:start ajaxUI:reload attachment:create", function() {
+function updateFileUploadFilters() {
     let updater = function() {
         //@ts-ignore
         let selected_option = $(this)[0].selectedOptions[0];
@@ -519,10 +523,12 @@ $(document).on("ajaxUI:start ajaxUI:reload attachment:create", function() {
 
     //Register a change handler on all change listeners, and update it when the events are triggered
     $('select.attachment_type_selector').change(updater).each(updater);
-});
+}
+document.addEventListener('turbo:load', updateFileUploadFilters);
+$(document).on('attachment:create', updateFileUploadFilters);
 
 
-$(document).on("ajaxUI:start ajaxUI:reload", function() {
+document.addEventListener("turbo:load", function() {
     function setTooltip(btn, message) {
         $(btn).tooltip('hide')
             .attr('data-original-title', message)
@@ -549,7 +555,7 @@ $(document).on("ajaxUI:start ajaxUI:reload", function() {
 });
 
 //Register U2F on page reload too...
-$(document).on("ajaxUI:reload", function() {
+document.addEventListener("turbo:load", function() {
     //@ts-ignore
     window.u2fauth.ready(function () {
         const form = document.getElementById('u2fForm')
@@ -560,7 +566,7 @@ $(document).on("ajaxUI:reload", function() {
 
         if (type === 'auth') {
             //@ts-ignore
-            u2fauth.authenticate()
+            u2fauth.authenticate();
         } else if (type === 'reg' && form.addEventListener) {
             form.addEventListener('submit', function (event) {
                 event.preventDefault()
@@ -575,7 +581,7 @@ $(document).on("ajaxUI:reload", function() {
 const codeReader = new ZXing.BrowserMultiFormatReader();
 
 //Init barcode scanner
-$(document).on("ajaxUI:start ajaxUI:reload", function() {
+document.addEventListener("turbo:load", function() {
 
     //Skip if we are not on scanner page...
     if (!document.getElementById('scan_dialog_form')) {
